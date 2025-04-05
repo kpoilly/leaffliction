@@ -112,10 +112,8 @@ def save_images(images):
     Save the images to the given path with the given name.
     """
     for path, image in images:
-        if os.path.exists(path) is False:
-            raise AssertionError(f"Path {path} does not exist.")
         image.save(path)
-        print(f"Saved image to {path}")
+        print(f"Saved images to {path}")
 
 
 def augmentation(path, save_in_local_folder=False):

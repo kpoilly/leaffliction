@@ -4,6 +4,15 @@ import os
 
 class StaticValidators:
     @staticmethod
+    def validate_path(path_str):
+        """
+        This function checks if the given path is a valid path.
+        If it is not, it raises an AssertionError with a message.
+        """
+        if not os.path.exists(path_str):
+            raise AssertionError(f"Path {path_str} does not exist.")
+
+    @staticmethod
     def validate_path_dir(path_str):
         """
         This function checks if the given path is a directory.

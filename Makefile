@@ -62,7 +62,7 @@ install:
 		python3 -m venv ${VENV_DIR}; \
 		. ${VENV_DIR}/bin/activate; \
 		if [ -f ${DEP_FILE}  ]; then \
-			pip install --force-reinstall -r ${DEP_FILE}; \
+			pip install -r ${DEP_FILE}; \
 			echo "Installing dependencies...DONE"; \
 		fi; \
 		}
