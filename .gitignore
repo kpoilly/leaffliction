@@ -1,0 +1,31 @@
+# Ignore all files by default
+*
+__pycache__/
+
+
+# Allow .sh and .py files
+!*.sh
+!*.py
+
+# Allow Venv utilities
+!Makefile
+!requirements.txt
+!requirement.txt
+
+
+# Allow directories and their contents recursively if they contain .sh or .py
+!*/
+
+# Ignore all other hidden files and folders except .sh and .py
+.*
+!.gitignore
+
+# Ignore venv generated files
+bin/
+include/
+lib/
+lib64/
+share/
+pyvenv.cfg
+
+!Dockerfile
