@@ -12,6 +12,20 @@ class StaticValidators:
         if not os.path.isdir(path_str):
             raise AssertionError(f"Path {path_str} is not a directory.")
 
+    @staticmethod
+    def validate_imgFile(
+        path_str, allowed_extensions=[".jpg", ".jpeg", ".JPG", ".png"]
+    ):
+        """
+        This function checks if the given path is a file.
+        If it is not, it raises an AssertionError with a message.
+        """
+        if not os.path.isfile(path_str):
+            raise AssertionError(f"{path_str} is not a file.")
+
+        if not any(path_str.endswith(ext) for ext in allowed_extensions):
+            raise AssertionError(f"File {path_str} is not a valid image file.")
+
 
 class ArgumentValidator():
     def __init__(self):
