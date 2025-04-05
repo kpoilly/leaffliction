@@ -12,23 +12,11 @@ st.write(
 )
 
 
-if "imgUploaded" not in st.session_state:
-    st.session_state["imgUploaded"] = False
-
-
-def onChangeCB():
-    st.session_state["imgUploaded"] = True
-
-
-def onClickCB():
-    st.session_state["imgAugmented"] = True
-
-
 def view():
     imgFile = st.file_uploader(
-        "image", type=["jpg", "jpeg", "JPG"], on_change=onChangeCB)
+        "image", type=["jpg", "jpeg", "JPG"])
 
-    if st.session_state["imgUploaded"]:
+    if imgFile:
         st.write("### Original image")
         st.image(imgFile, caption="Original Image", use_container_width=True)
 

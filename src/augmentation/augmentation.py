@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageFile
 from PIL import ImageFilter
 from PIL import ImageEnhance
 import random
@@ -8,7 +8,7 @@ import numpy as np
 
 class ImgTransformation():
     @staticmethod
-    def rotate(image, angle=None):
+    def rotate(image: ImageFile, angle=None):
         """
         Rotate the image by a given angle.
         """
@@ -18,35 +18,33 @@ class ImgTransformation():
         return image.rotate(angle)
 
     @staticmethod
-    def flip(image):
+    def flip(image: ImageFile):
         """
         Flip the image horizontally.
         """
         return image.transpose(Image.FLIP_LEFT_RIGHT)
 
     @staticmethod
-    def crop(image, crop_fraction=None):
+    def crop(image: ImageFile, crop_fraction=0.8):
         """
         Crop the image to the given box.
         """
-        if crop_fraction is None:
-            crop_fraction = random.uniform(0.7, 0.85)
         width, height = image.size
         new_width = int(width * crop_fraction)
         new_height = int(height * crop_fraction)
-        left = random.randint(0, width - new_width)
-        top = random.randint(0, height - new_height)
+        left = (width - new_width) // 2
+        top = (height - new_height) // 2
         return image.crop((left, top, left + new_width, top + new_height))
 
     @staticmethod
-    def blur(image, blur_radius=2):
+    def blur(image: ImageFile, blur_radius=2):
         """
         Blur the image by a given radius.
         """
         return image.filter(ImageFilter.GaussianBlur(blur_radius))
 
     @staticmethod
-    def contrast(image, contrast_factor=2):
+    def contrast(image: ImageFile, contrast_factor=2):
         """
         Adjust the contrast of the image.
         """
@@ -54,7 +52,7 @@ class ImgTransformation():
         return enhancer.enhance(contrast_factor)
 
     @staticmethod
-    def shear(image, shear_factor=0.25):
+    def shear(image: ImageFile, shear_factor=0.25):
         """
         Shear the image by a given angle while maintaining the original width.
         """
@@ -107,16 +105,6 @@ class ImgTransformation():
         )
 
         return img
-
-
-def save_img(image, path, name):
-    """
-    Save the image to the given path with the given name.
-    """
-    print(f"Saving image to {path}/{name}.JPG")
-    if os.path.exists(path) is False:
-        raise AssertionError(f"Path {path} does not exist.")
-    image.save(f"{path}/{name}.JPG")
 
 
 def save_images(images):
