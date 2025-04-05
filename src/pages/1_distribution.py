@@ -13,6 +13,7 @@ st.write(
 def view():
     def display_plot():
         dist_map = distribution("data/")
+        st.success("Plot generated!")
         st.write("### Distribution of Images by directory")
         plot_distribution(
             dist_map,
@@ -22,7 +23,6 @@ def view():
     if st.button("Show Distribution"):
         with st.spinner("Generating distribution plot..."):
             display_plot()
-        st.success("Plot generated!")
 
 
 view()

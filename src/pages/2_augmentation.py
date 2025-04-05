@@ -23,8 +23,7 @@ def view():
         if st.button("Show Augmented images"):
             with st.spinner("Generating Augmented images..."):
                 img = PIL.Image.open(imgFile)
-                images = augmentation_from_img(
-                    img, imgFile.name)
+                images = augmentation_from_img(img)
                 st.success("Images generated!")
                 for img in images:
                     st.write(img[0])

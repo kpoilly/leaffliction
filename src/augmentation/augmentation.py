@@ -155,7 +155,7 @@ def augmentation(path, save_in_local_folder=False):
     return images
 
 
-def augmentation_from_img(img, img_name):
+def augmentation_from_img(img):
     """_summary_
     Augment images in the given path using OpenCV.
     This function applies various transformations to the images
@@ -185,7 +185,5 @@ def augmentation_from_img(img, img_name):
     images = []
     for transformation, name in zip(transformations, names):
         new_img = transformation(img)
-        output_path = "{0}_{1}.JPG".format(img_name[:-4],
-                                           name)
-        images.append((output_path, new_img))
+        images.append((name, new_img))
     return images
