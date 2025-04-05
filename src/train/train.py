@@ -1,5 +1,5 @@
 import sys
-from utils import load
+from ..utils import load
 import tensorflow as tf
 from keras import layers, models
 from keras.api.callbacks import EarlyStopping
