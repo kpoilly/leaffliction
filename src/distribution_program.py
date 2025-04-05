@@ -1,5 +1,5 @@
 from utils import Argument, StaticValidators
-from distribution import distribution
+from distribution import distribution, plot_distribution
 import sys
 
 
@@ -20,7 +20,8 @@ def arguments_logic():
 if __name__ == "__main__":
     try:
         args = arguments_logic()
-        distribution(args.directory, True)
+        dist = distribution(args.directory)
+        plot_distribution(dist)
         exit(0)
     except Exception as e:
         print(f"Error: {str(e)}", file=sys.stderr)
