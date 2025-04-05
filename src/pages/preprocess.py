@@ -23,7 +23,8 @@ def get_UN_data():
 try:
     df = get_UN_data()
     countries = st.multiselect(
-        "Choose countries", list(df.index), ["China", "United States of America"]
+        "Choose countries", list(df.index), [
+            "China", "United States of America"]
     )
     if not countries:
         st.error("Please select at least one country.")
@@ -34,7 +35,8 @@ try:
 
         data = data.T.reset_index()
         data = pd.melt(data, id_vars=["index"]).rename(
-            columns={"index": "year", "value": "Gross Agricultural Product ($B)"}
+            columns={"index": "year",
+                     "value": "Gross Agricultural Product ($B)"}
         )
         chart = (
             alt.Chart(data)

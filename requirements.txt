@@ -7,6 +7,7 @@ cachetools==5.5.2
 certifi==2025.1.31
 charset-normalizer==3.4.1
 click==8.1.8
+flake8==7.2.0
 flatbuffers==25.2.10
 gast==0.6.0
 gitdb==4.0.12
@@ -23,6 +24,7 @@ libclang==18.1.1
 Markdown==3.7
 markdown-it-py==3.0.0
 MarkupSafe==3.0.2
+mccabe==0.7.0
 mdurl==0.1.2
 ml_dtypes==0.5.1
 namex==0.0.8
@@ -35,7 +37,9 @@ pandas==2.2.3
 pillow==11.1.0
 protobuf==5.29.4
 pyarrow==19.0.1
+pycodestyle==2.13.0
 pydeck==0.9.1
+pyflakes==3.3.2
 Pygments==2.19.1
 python-dateutil==2.9.0.post0
 pytz==2025.2
