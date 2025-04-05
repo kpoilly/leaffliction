@@ -16,27 +16,33 @@ def distribution(path):
     return data_map
 
 
-def plot_distribution(data_map):
+def plot_distribution(data_map, displayfunc=None):
 
     labels = list(data_map.keys())
     labels = sorted(labels, key=lambda x: data_map[x], reverse=True)
     values = [data_map[label] for label in labels]
 
-    plt.figure(figsize=(10, 5))
+    fig = plt.figure(figsize=(10, 5))
     colors = plt.cm.tab20.colors
     plt.bar(labels, values, color=[colors[i % len(colors)]
             for i in range(len(labels))])
-    plt.xlabel('Labels')
+    plt.xlabel('Directories')
     plt.ylabel('Number of Images')
     plt.title('Distribution of Images by directory')
     plt.xticks(rotation=45)
     plt.tight_layout()
-    plt.show()
+    if displayfunc is None:
+        plt.show()
+    else:
+        displayfunc(fig)
 
     # Plot a pie chart
-    plt.figure(figsize=(8, 8))
+    fig = plt.figure(figsize=(8, 8))
     plt.pie(values, labels=labels, autopct='%1.1f%%', startangle=90,
             colors=[colors[i % len(colors)] for i in range(len(labels))])
     plt.title('Distribution of Images by directory')
     plt.tight_layout()
-    plt.show()
+    if displayfunc is None:
+        plt.show()
+    else:
+        displayfunc(fig)
