@@ -25,12 +25,12 @@ def view():
                 file_bytes = np.frombuffer(imgFile.read(), np.uint8)
                 img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
                 images = transformation_from_img(
-                    img)
+                    img, st.pyplot)
                 st.success("Images generated!")
-                for img in images:
-                    st.write(img[0])
-                    st.image(img[1], caption=img[0],
-                             use_container_width=True)
+
+                for key, img in images.items():
+                    st.write(key)
+                    st.image(img, caption=key, use_container_width=True)
 
 
 view()
