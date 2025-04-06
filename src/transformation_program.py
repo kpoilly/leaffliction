@@ -1,7 +1,7 @@
 from utils import Argument, StaticValidators
 import sys
 import os
-from transformation import transformation, save_images
+from transformation import transformation
 
 
 def arguments_logic():
