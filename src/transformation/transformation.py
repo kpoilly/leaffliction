@@ -187,7 +187,8 @@ def transformation(path, dst, pcv_option="plot"):
     img, _, _ = pcv.readimage(filename=path)
     cls = ImgTransformation(img, dst, pcv_option)
     cls.get_images()
-    cls.color_histogram()
+    if pcv_option == "plot":
+        cls.color_histogram()
 
 
 def transformation_from_img(img, displayFunc=None):
