@@ -5,6 +5,7 @@ __pycache__/
 
 # Allow .sh and .py files
 !*.sh
+!*.md
 !*.py
 
 # Allow Venv utilities
