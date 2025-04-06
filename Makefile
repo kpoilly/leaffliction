@@ -32,7 +32,7 @@ help:
 	@echo "  phony:      Run the phony targets"
 
 start:
-	@$(call venvWrapper, streamlit run ${SRC_DIR}/main.py )
+	@$(call venvWrapper, streamlit run ${SRC_DIR}/main.py --server.baseUrlPath=${SRC_DIR} )
 
 run-docker:
 	docker build -t $(DOCKER_IMG_NAME) .
