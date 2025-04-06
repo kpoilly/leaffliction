@@ -2,17 +2,27 @@ from plantcv import plantcv as pcv
 import cv2
 import os
 from .color_histogram import plot_histogram
+from rembg import remove
+
+
+def remove_background_rembg(image):
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    result = remove(image)
+    return cv2.cvtColor(result, cv2.COLOR_RGB2BGR)
 
 
 class ImgTransformation:
     def __init__(self, img, dst=None, pcv_option=None):
         self.img = img
         self.dst = dst
+
+        # Remove the background using rembg
+        self.img_nobg = remove_background_rembg(self.img)
         # Convert the image to grayscale
-        s = pcv.rgb2gray_hsv(rgb_img=self.img, channel="s")
+        s = pcv.rgb2gray_hsv(rgb_img=self.img_nobg, channel="s")
         # Create a binary image with a threshold
         s_thresh = pcv.threshold.binary(
-            gray_img=s, threshold=60, object_type='light'
+            gray_img=s, threshold=20, object_type='light'
         )
         # Remove small objects from the binary image that are smaller
         # than 200 pxls
@@ -176,12 +186,7 @@ def transformation(path, dst, pcv_option="plot"):
     """
     img, _, _ = pcv.readimage(filename=path)
     cls = ImgTransformation(img, dst, pcv_option)
-    cls.original()
-    cls.gaussian_blur()
-    cls.mask()
-    cls.roi_objects()
-    cls.analyze_objects()
-    cls.pseudolandmarks()
+    cls.get_images()
     cls.color_histogram()
 
 

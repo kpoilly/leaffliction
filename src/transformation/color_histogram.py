@@ -3,13 +3,13 @@ import matplotlib.pyplot as plt
 from plantcv import plantcv as pcv
 
 
-def plot_stat_hist(label, sc=1):
+def plot_stat_hist(label, scl=1):
     """
     Retrieve the histogram x and y values and plot them
     """
     y = pcv.outputs.observations['default_1'][f"{label}_frequencies"]['value']
     x = [
-        i * sc
+        i * scl
         for i in pcv.outputs.observations['default_1'][
             f"{label}_frequencies"
         ]['label']
@@ -30,6 +30,8 @@ def plot_histogram(image, kept_mask, display_func=None):
     Plot the histogram of the image
     """
 
+    # Create a dictionary to store the labels and their corresponding scale
+    # some labels are on % so they are multiplied by 2.55
     dict_label = {
         "blue": 1,
         "green": 1,
