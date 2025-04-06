@@ -34,19 +34,14 @@ def transformation_dir(path, output_dir):
         for file in files:
             if file.endswith(allowed_extensions):
                 img_path = os.path.join(root, file)
-                images = transformation(img_path, True)
-
-                # create directory in output_dir according to the root
                 relative_path = os.path.commonpath([path, root])
-                print(f"relative_path: {relative_path}")
                 new_path = os.path.relpath(root, relative_path)
-                print(f"new_path: {new_path}")
                 output_subdir = os.path.join(output_dir, new_path)
-                print(f"Creating directory: {output_subdir}")
                 if not os.path.exists(output_subdir):
                     os.makedirs(output_subdir)
+                output_file_basename = os.path.join(output_dir, file[:-4])
 
-                save_images(images, output_subdir)
+                transformation(img_path, output_file_basename, "print")
 
 
 if __name__ == "__main__":
@@ -58,8 +53,7 @@ if __name__ == "__main__":
         if os.path.isdir(args.src):
             transformation_dir(args.src, args.dst)
         else:
-            images = transformation(args.src)
-            # save_images(images, args.dst)
+            images = transformation(args.src, args.dst, "plot")
         exit(0)
     except Exception as e:
         print(f"Error: {str(e)}", file=sys.stderr)

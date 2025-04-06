@@ -56,7 +56,7 @@ install:
 			elif [[ $${filename} == *.tar || $${filename} == *.tar.gz || $${filename} == *.tgz ]]; then \
 				echo "Untarring..."; \
 				tar -xvf $${filename} -C ${DATA_DIR}/; \
-			rm -f $${filename}; \
+			rm -rf $${filename}; \
 			fi; \
 		fi; \
 		python3 -m venv ${VENV_DIR}; \

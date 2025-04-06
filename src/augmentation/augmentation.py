@@ -147,7 +147,7 @@ def augmentation(path, save_in_local_folder=False):
     images = []
     for transformation, name in zip(transformations, names):
         new_img = transformation(img)
-        output_path = "{0}_{1}.JPG".format(path if save_in_local_folder
+        output_path = "{0}_{1}.JPG".format(path[:-4] if save_in_local_folder
                                            else os.path.basename(path)[:-4],
                                            name)
         images.append((output_path, new_img))
