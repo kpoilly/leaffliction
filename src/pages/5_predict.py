@@ -1,22 +1,38 @@
+import os
+import PIL
 import streamlit as st
 
-st.set_page_config(page_title="Augmentation", page_icon="")
+from predict import predict
 
-st.markdown("# Augmentation")
-st.sidebar.header("Augmentation")
+st.set_page_config(page_title="Prediction", page_icon="")
+
+st.markdown("# Prediction")
+st.sidebar.header("Prediction")
 st.write(
-    """This Page is used to visualize the augmentation process."""
+    """This Page is used to predict the class of a leaf."""
 )
 
 
 def view():
-    def display_augmented_img():
-        st.write("### Augmented images")
+    imgFile = st.file_uploader(
+        "image", type=["jpg", "jpeg", "JPG"])
 
-    if st.button("Show Augmented images"):
-        with st.spinner("Generating Augmented images..."):
-            display_augmented_img()
-        st.success("Images generated!")
+    if imgFile:
+        st.write("### Original image")
+        st.image(imgFile, caption="Original Image", use_container_width=True)
+
+        if st.button("Predict"):
+            with st.spinner("Predicting..."):
+                img = PIL.Image.open(imgFile)
+                img.save("tmp.jpg")
+                model_path = "model/model.keras"
+                if not os.path.exists(model_path):
+                    st.error(f"Model file '{model_path}' not found. Make sure to train the model first!")
+                else:
+                    predicted_class = predict("tmp.jpg", model_path)
+                    st.success("Prediction done!")
+                    st.write(f"Predicted class: {predicted_class}")
+                os.remove("tmp.jpg")
 
 
 view()

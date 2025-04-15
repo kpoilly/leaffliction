@@ -70,9 +70,9 @@ def create_model(nb_outputs, nb_filters=64, dropout=0.5):
         layers.Conv2D(32, (1, 1), activation="relu"),
         layers.MaxPooling2D(2, 2),
         layers.Flatten(),
-        layers.Dense(512, activation="relu"),
-        layers.Dropout(dropout),
         layers.Dense(256, activation="relu"),
+        layers.Dropout(dropout),
+        layers.Dense(128, activation="relu"),
         layers.Dense(nb_outputs, activation="softmax")
     ])
     model.compile(
@@ -83,7 +83,7 @@ def create_model(nb_outputs, nb_filters=64, dropout=0.5):
     return model
 
 
-def train(df, df_val, nb_filters=64, dropout=0.5, epochs=5, patience=2):
+def train(df, df_val, nb_filters=48, dropout=0.3, epochs=10, patience=3):
     print(f"Starting model's training with settings:\n{epochs} epochs\n\
 Convolution filters: {nb_filters}\nDropout: {dropout}")
 
@@ -102,8 +102,8 @@ Convolution filters: {nb_filters}\nDropout: {dropout}")
               callbacks=[early_stop])
 
     loss, accuracy = model.evaluate(df_val)
-    print(f"Test Loss: {loss:.4f}")
-    print(f"Test Accuracy: {accuracy:.4f}")
+    print(f"Val Loss: {loss:.4f}")
+    print(f"Val Accuracy: {accuracy:.4f}")
 
     draw_training(history)
     print(model.summary())
