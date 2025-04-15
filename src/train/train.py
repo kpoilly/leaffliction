@@ -1,5 +1,3 @@
-import sys
-from ..utils import load
 import tensorflow as tf
 from keras import layers, models
 from keras.api.callbacks import EarlyStopping
@@ -25,17 +23,17 @@ def create_model(nb_outputs, nb_filters=64, dropout=0.5):
     ])
     model.compile(
         optimizer="adam",
-        loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+        loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),
         metrics=["accuracy"],
     )
     return model
 
 
-def train(df, df_val, nb_filters=64, dropout=0.5, epochs=10, patience=3):
+def train(df, df_val, nb_filters=64, dropout=0.5, epochs=5, patience=2):
     print(f"Starting model's training with settings:\n{epochs} epochs\n\
 Convolution filters: {nb_filters}\nDropout: {dropout}")
-    model = create_model(len(df.class_names), nb_filters, dropout)
 
+    model = create_model(len(df.class_names), nb_filters, dropout)
     early_stop = EarlyStopping(
         monitor='val_loss',
         patience=patience,
@@ -49,27 +47,8 @@ Convolution filters: {nb_filters}\nDropout: {dropout}")
               validation_data=df_val,
               callbacks=[early_stop])
 
-    loss, accu = model.evaluate(df_val)
-    print(f"Model trained.\nLoss: {loss}\nAccuracy: {round(accu * 100, 4)}%")
+    loss, accuracy = model.evaluate(df_val)
+    print(f"Test Loss: {loss:.4f}")
+    print(f"Test Accuracy: {accuracy:.4f}")
 
-    # Save the model etc, zip etc...
-    model.save("models/model.keras")
-
-
-def main():
-    data_path = "data"
-
-    # Add batch_size, nb epochs, nb filters, dropout and other
-    # training settings with argparse
-
-    try:
-        df_train, df_val = load(data_path, 32)
-    except Exception as e:
-        print(f"Error: {str(e)}", file=sys.stderr)
-        exit()
-
-    train(df_train, df_val, 64, 0.5, 3)
-
-
-if __name__ == "__main__":
-    main()
+    return model
