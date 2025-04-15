@@ -63,16 +63,24 @@ class Argument(ArgumentValidator):
         self.parser = argparse.ArgumentParser(description=description)
         super().__init__()
 
-    def add_argument(self, arg_name, arg_type, help_text, default=None):
+    def add_argument(self, arg_name, arg_type=None, help_text="",
+                     default=None, action=None, nargs=None):
         """
         This function adds an argument to the parser.
         """
-        self.parser.add_argument(
-            arg_name,
-            type=arg_type,
-            help=help_text,
-            default=default
-        )
+        kwargs = {
+            'help': help_text,
+        }
+        if nargs is not None:
+            kwargs['nargs'] = nargs
+
+        if action == 'store_true':
+            kwargs['action'] = 'store_true'
+        else:
+            kwargs['type'] = arg_type
+            kwargs['default'] = default
+
+        self.parser.add_argument(arg_name, **kwargs)
 
     def add_validator(self, validator, args):
         return super().add_validator(validator, args)

@@ -29,6 +29,7 @@ def transformation_dir(path, output_dir):
     """
     This function creates a list of images from a directory.
     """
+    count = 0
     allowed_extensions = (".jpg", ".JPG", ".jpeg")
     for root, dirs, files in os.walk(path):
         for file in files:
@@ -36,12 +37,16 @@ def transformation_dir(path, output_dir):
                 img_path = os.path.join(root, file)
                 relative_path = os.path.commonpath([path, root])
                 new_path = os.path.relpath(root, relative_path)
-                output_subdir = os.path.join(output_dir, new_path)
+                output_subdir = os.path.join(
+                    output_dir, new_path) if new_path != "." else output_dir
                 if not os.path.exists(output_subdir):
                     os.makedirs(output_subdir)
-                output_file_basename = os.path.join(output_dir, file[:-4])
-
+                output_file_basename = os.path.join(
+                    output_subdir, file[:-4])
                 transformation(img_path, output_file_basename, "print")
+
+                count += 1
+                print(f"{count} {count / 16}%", end="\r")
 
 
 if __name__ == "__main__":
