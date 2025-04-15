@@ -1,6 +1,7 @@
-import tensorflow as tf
-from keras.models import load_model
+import os
 import numpy as np
+
+from keras.models import load_model
 from PIL import Image
 
 
@@ -15,7 +16,6 @@ def predict(image_path, model_path="model/model.keras"):
 
     try:
         img = Image.open(image_path).convert("RGB")
-        img = img.resize((128, 128))
         img_array = np.array(img)
         img_array = np.expand_dims(img_array, axis=0)
 

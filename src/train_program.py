@@ -1,6 +1,6 @@
 import sys
 from train import train
-from utils import load
+from train import load_split_dataset
 import argparse
 
 import os
@@ -18,7 +18,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     try:
-        df_train, df_val = load(data_path, 32)
+        df_train, df_val = load_split_dataset(data_path, 32)
         model = train(df_train, df_val, args.nb_filters, args.dropout, args.epochs, args.patience)
         model.save("model/model.keras")
         print('Model saved at "model/model.keras".')
