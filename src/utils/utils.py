@@ -18,6 +18,6 @@ def load(path: str, batch_size=32):
     except FileNotFoundError:
         raise AssertionError(f"file {path} not found.")
     print(
-        f"Loaded df_train:{df_train.element_spec} - {len(df_train)} elements.")
-    print(f"Loaded df_val:{df_val.element_spec} - {len(df_val)} elements.")
+        f"Loaded df_train: {df_train.element_spec} - {len(df_train)} elements.")
+    print(f"Loaded df_val: {df_val.element_spec} - {len(df_val)} elements.")
     return df_train, df_val

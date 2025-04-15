@@ -203,5 +203,5 @@ def transformation_from_img(img, displayFunc=None):
     """
     cls = ImgTransformation(img, None)
     images = cls.get_images()
-    cls.color_histogram(displayFunc)
+    # cls.color_histogram(displayFunc)
     return images
