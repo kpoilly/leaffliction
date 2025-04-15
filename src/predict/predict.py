@@ -5,7 +5,7 @@ from keras.models import load_model
 from PIL import Image
 
 
-def predict(image_path, model_path="model/model.keras"):
+def predict(image_path: str, model_path="model/model.keras"):
     try:
         model = load_model(model_path)
         print(f"Model '{model_path}' loaded successfully.")
@@ -36,3 +36,4 @@ def predict(image_path, model_path="model/model.keras"):
     prediction = np.argmax(predictions[0])
 
     return class_names[prediction]
+

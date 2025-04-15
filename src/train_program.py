@@ -18,7 +18,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     try:
-        df_train, df_val = load_split_dataset(data_path, 32)
+        df_train, df_val = load_split_dataset(data_path, args.batch_size)
         model = train(df_train, df_val, args.nb_filters, args.dropout, args.epochs, args.patience)
         model.save("model/model.keras")
         print('Model saved at "model/model.keras".')

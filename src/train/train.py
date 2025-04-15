@@ -7,7 +7,7 @@ from keras.api.callbacks import EarlyStopping
 from keras.api.utils import image_dataset_from_directory
 
 
-def load_split_dataset(path: str, batch_size=32):
+def load_split_dataset(path: str, batch_size=128):
     """
     Loads directory of images and split it into 2 tf.Datasets
     (train and validation)
@@ -61,13 +61,13 @@ def create_model(nb_outputs, nb_filters=64, dropout=0.5):
     model = models.Sequential([
         layers.Rescaling(1.0 / 255),
         layers.BatchNormalization(),
-        layers.Conv2D(nb_filters, (3, 3), activation="relu"),
+        layers.SeparableConv2D(nb_filters, (3, 3), activation="relu"),
         layers.MaxPooling2D(2, 2),
         layers.BatchNormalization(),
-        layers.Conv2D(nb_filters, (3, 3), activation="relu"),
+        layers.SeparableConv2D(nb_filters, (3, 3), activation="relu"),
         layers.MaxPooling2D(2, 2),
         layers.BatchNormalization(),
-        layers.Conv2D(32, (1, 1), activation="relu"),
+        layers.SeparableConv2D(32, (1, 1), activation="relu"),
         layers.MaxPooling2D(2, 2),
         layers.Flatten(),
         layers.Dense(256, activation="relu"),
