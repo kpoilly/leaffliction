@@ -19,12 +19,6 @@ if __name__ == "__main__":
 
     try:
         df_train, df_val = load(data_path, 32)
-        class_names = df_train.class_names
-
-        with open("model/class_names.txt", "w") as f:
-            for class_name in class_names:
-                f.write(f"{class_name}\n")
-
         model = train(df_train, df_val, args.nb_filters, args.dropout, args.epochs, args.patience)
         model.save("model/model.keras")
         print('Model saved at "model/model.keras".')
