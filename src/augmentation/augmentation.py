@@ -116,7 +116,7 @@ def save_images(images):
         print(f"Saved images to {path}")
 
 
-def augmentation(path, save_in_local_folder=False):
+def augmentation(path, save_in_local_folder=False, skip={}):
     """_summary_
     Augment images in the given path using OpenCV.
     This function applies various transformations to the images
@@ -144,6 +144,18 @@ def augmentation(path, save_in_local_folder=False):
         ImgTransformation.contrast,
         ImgTransformation.shear
     ]
+    if skip.get("crop", None) is True:
+        names.remove("crop")
+        transformations.remove(ImgTransformation.crop)
+    if skip.get("shear", None) is True:
+        names.remove("shear")
+        transformations.remove(ImgTransformation.shear)
+    if skip.get("blur", None) is True:
+        names.remove("blur")
+        transformations.remove(ImgTransformation.blur)
+    if skip.get("flip", None) is True:
+        names.remove("flip")
+        transformations.remove(ImgTransformation.flip)
     images = []
     for transformation, name in zip(transformations, names):
         new_img = transformation(img)

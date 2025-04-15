@@ -1,5 +1,8 @@
 import os
 import matplotlib.pyplot as plt
+import matplotlib
+
+matplotlib.use('TkAgg')  # Use the TkAgg backend for matplotlib
 
 
 def distribution(path):
@@ -12,7 +15,7 @@ def distribution(path):
             if label not in data_map:
                 data_map[label] = 0
             data_map[label] += 1
-
+    print(data_map)
     return data_map
 
 

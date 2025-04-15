@@ -3,12 +3,21 @@ import cv2
 import os
 from .color_histogram import plot_histogram
 from rembg import remove
+import matplotlib
+matplotlib.use('TkAgg')
 
 
 def remove_background_rembg(image):
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    shadow_mask = pcv.rgb2gray_lab(image, channel='l')
+    shadow_mask = pcv.threshold.binary(shadow_mask, 1, 'light')
+    shadow_mask = pcv.fill(bin_img=shadow_mask, size=500)
+    shadow_mask = pcv.erode(shadow_mask, 5, 1)
+
     result = remove(image)
-    return cv2.cvtColor(result, cv2.COLOR_RGB2BGR)
+    grey_scale = pcv.rgb2gray_lab(result, channel='l')
+    mask_withoutbg = pcv.threshold.binary(grey_scale, 20, 'light')
+    mask_withoutbg = pcv.logical_and(shadow_mask, mask_withoutbg)
+    return pcv.fill_holes(bin_img=mask_withoutbg)
 
 
 class ImgTransformation:
@@ -16,19 +25,10 @@ class ImgTransformation:
         self.img = img
         self.dst = dst
 
-        # Remove the background using rembg
-        self.img_nobg = remove_background_rembg(self.img)
-        # Convert the image to grayscale
-        s = pcv.rgb2gray_hsv(rgb_img=self.img_nobg, channel="s")
-        # Create a binary image with a threshold
-        s_thresh = pcv.threshold.binary(
-            gray_img=s, threshold=20, object_type='light'
-        )
-        # Remove small objects from the binary image that are smaller
-        # than 200 pxls
-        self._filled = pcv.fill(bin_img=s_thresh, size=200)
+        self._filled = remove_background_rembg(self.img)
 
         self._pcv_option = pcv_option
+        self._disease_mask = None
         self._g_blur = None
         self._mask = None
         self._roi = None
@@ -37,10 +37,10 @@ class ImgTransformation:
         self._pseudolandmarks = None
 
     def get_images(self):
+        if self._disease_mask is None:
+            self.mask_disease()
         if self._g_blur is None:
             self.gaussian_blur()
-        if self._mask is None:
-            self.mask()
         if self._roi is None:
             self.roi_objects()
         if self._analyzed is None:
@@ -53,8 +53,8 @@ class ImgTransformation:
 
         return {
             "Original": convert(self.img),
+            "Disease_mask": convert(self._disease_mask),
             "Gaussian blur": convert(self._g_blur),
-            "Mask": convert(self._mask),
             "ROI objects": convert(self._roi),
             "Analyze object": convert(self._analyzed),
             "Pseudolandmarks": convert(self._pseudolandmarks),
@@ -65,98 +65,106 @@ class ImgTransformation:
             new_path = "{0}_{1}.JPG".format(self.dst, new_name)
             os.rename(old_name, new_path)
 
-    def original(self):
-        # Save the original image
+    def _print_image(self, img, filename):
         if self._pcv_option == "print":
             pcv.print_image(
-                img=self.img, filename="{0}_original.JPG".format(self.dst))
+                img=img,
+                filename=filename
+            )
         elif self._pcv_option == "plot":
-            pcv.plot_image(img=self.img)
+            pcv.plot_image(img=img, title=filename,)
+
+    def original(self):
+        # Save the original image
+        self._print_image(
+            img=self.img,
+            filename="{0}_original.JPG".format(self.dst)
+        )
+        return self.img
+
+    def mask_disease(self):
+        mask = pcv.threshold.dual_channels(self.img,
+                                           x_channel="a",
+                                           y_channel="b",
+                                           points=[(35, 50), (90, 110)],
+                                           above=True
+                                           )
+
+        self._disease_mask = pcv.logical_xor(self._filled, mask)
+        self._print_image(
+            img=self._disease_mask,
+            filename="{0}_disease_mask.JPG".format(self.dst)
+        )
+        return self._disease_mask
 
     def gaussian_blur(self):
-        pcv.params.debug = self._pcv_option
+        if self._disease_mask is None:
+            self.mask_disease()
 
         # Apply Gaussian blur to the filled image
         self._g_blur = pcv.gaussian_blur(
-            img=self._filled, ksize=(3, 3), sigma_x=0, sigma_y=0
+            img=self._disease_mask, ksize=(3, 3), sigma_x=0, sigma_y=0
         )
-        pcv.params.debug = None
-        self.change_filename(
-            f"{str(pcv.params.device - 1)}_gaussian_blur.png", "gaussian_blur")
-
-    def mask(self):
-        if self._g_blur is None:
-            self.gaussian_blur()
-
-        pcv.params.debug = self._pcv_option
-
-        # Create a mask from the filled image
-        self._mask = pcv.apply_mask(
-            img=self.img, mask=self._g_blur, mask_color='white')
-
-        pcv.params.debug = None
-        self.change_filename(
-            f"{str(pcv.params.device - 1)}_masked.png", "mask")
+        self._print_image(
+            img=self._g_blur,
+            filename="{0}gaussian_blur.JPG".format(self.dst)
+        )
+        return self._g_blur
 
     def roi_objects(self):
-        if self._mask is None:
-            self.mask()
+        if self._disease_mask is None:
+            self.mask_disease()
 
         # Create the ROI
-        roi = pcv.roi.rectangle(img=self._mask, x=0, y=0,
+        roi = pcv.roi.rectangle(img=self._disease_mask, x=0, y=0,
                                 h=self.img.shape[0],
                                 w=self.img.shape[1])
 
         # Create a mask that we will inverse to get green spots
         self._kept_mask = pcv.roi.filter(
-            mask=self._filled, roi=roi, roi_type='partial',
+            mask=self._disease_mask, roi=roi, roi_type='partial',
         )
         roi_image = self.img.copy()
         roi_image[self._kept_mask != 0] = (0, 255, 0)
 
-        # Draw the roi on the image
-        pcv.params.line_color = (255, 0, 0)
-        pcv.params.debug = "print"
-        self._roi = pcv.roi.rectangle(
-            img=roi_image, x=0, y=0,
-            h=self.img.shape[0],
-            w=self.img.shape[1]
-        )
-        pcv.params.line_color = None
-        pcv.params.debug = None
-        filename = f"{str(pcv.params.device - 1)}_roi.png"
-        self._roi, _, _ = pcv.readimage(filename)
-        if self._pcv_option != "print":
-            os.remove(filename)
+        border_size = 5
+        roi_image[:border_size, :] = (255, 0, 0)
+        roi_image[-border_size:, :] = (255, 0, 0)
+        roi_image[:, :border_size] = (255, 0, 0)
+        roi_image[:, -border_size:] = (255, 0, 0)
 
-        self.change_filename(
-            filename, "roi_objects")
+        self._roi = roi_image
+
+        self._print_image(
+            img=self._roi,
+            filename="{0}_roi_objects.JPG".format(self.dst)
+        )
+        # Save the mask
+        return self._roi
 
     def analyze_objects(self):
         if self._kept_mask is None:
             self.roi_objects()
 
-        pcv.params.debug = self._pcv_option
-
         # Analyze the objects in the mask
         self._analyzed = pcv.analyze.size(
             img=self.img, labeled_mask=self._kept_mask)
-        pcv.params.debug = None
-        self.change_filename(
-            f"{str(pcv.params.device - 1)}_shapes.png", "analyze_object")
+        self._print_image(
+            img=self._analyzed,
+            filename="{0}_analyze_object.JPG".format(self.dst)
+        )
+        return self._analyzed
 
     def pseudolandmarks(self):
         if self._kept_mask is None:
             self.roi_objects()
 
         pcv.params.debug = "print"
-
         # Create the pseudolandmarks
         pcv.homology.x_axis_pseudolandmarks(
             img=self.img, mask=self._kept_mask, label='default'
         )
         pcv.params.debug = None
-
         filename = f"{str(pcv.params.device - 1)}_x_axis_pseudolandmarks.png"
 
         self._pseudolandmarks, _, _ = pcv.readimage(filename)
@@ -166,6 +174,12 @@ class ImgTransformation:
         self.change_filename(
             filename,
             "pseudolandmarks")
+
+        self._print_image(
+            img=self._pseudolandmarks,
+            filename="{0}_pseudolandmarks.JPG".format(self.dst)
+        )
+        return self._pseudolandmarks
 
     def color_histogram(self, display_func=None):
         if self._kept_mask is None:
@@ -186,9 +200,14 @@ def transformation(path, dst, pcv_option="plot"):
     """
     img, _, _ = pcv.readimage(filename=path)
     cls = ImgTransformation(img, dst, pcv_option)
-    cls.get_images()
+    images = cls.get_images()
     if pcv_option == "plot":
         cls.color_histogram()
+    elif pcv_option == "print":
+        cv2.imwrite(
+            f"{dst}_original.JPG",
+            images["Original"]
+        )
 
 
 def transformation_from_img(img, displayFunc=None):
