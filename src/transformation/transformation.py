@@ -108,7 +108,7 @@ class ImgTransformation:
         )
         self._print_image(
             img=self._g_blur,
-            filename="{0}gaussian_blur.JPG".format(self.dst)
+            filename="{0}_gaussian_blur.JPG".format(self.dst)
         )
         return self._g_blur
 
