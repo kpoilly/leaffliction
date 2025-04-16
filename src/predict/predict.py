@@ -24,14 +24,14 @@ def predict(image_path, model_path="model/model.keras"):
         print(f"Error processing image: {e}")
         return None
 
-    class_names = ["Apple_Black_rot",
-                "Apple_healthy",
-                "Apple_rust",
-                "Apple_scab",
-                "Grape_Black_rot",
-                "Grape_Esca",
-                "Grape_healthy",
-                "Grape_spot"]
+    class_names = ["Apple (Black Rot)",
+                   "Apple (Healthy)",
+                   "Apple (Rust)",
+                   "Apple (Scab)",
+                   "Grape (Black Rot)",
+                   "Grape (Esca)",
+                   "Grape (Healthy)",
+                   "Grape (Spot)"]
 
     predictions = model.predict(img_array)
     prediction = np.argmax(predictions[0])
