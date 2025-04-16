@@ -61,11 +61,6 @@ class ImgTransformation:
             "Pseudolandmarks": convert(self._pseudolandmarks),
         }
 
-    def change_filename(self, old_name, new_name):
-        if self._pcv_option == "print":
-            new_path = "{0}_{1}.JPG".format(self.dst, new_name)
-            os.rename(old_name, new_path)
-
     def _print_image(self, img, filename):
         if self._pcv_option == "print":
             pcv.print_image(
@@ -171,10 +166,6 @@ class ImgTransformation:
         self._pseudolandmarks, _, _ = pcv.readimage(filename)
         if self._pcv_option != "print":
             os.remove(filename)
-
-        self.change_filename(
-            filename,
-            "pseudolandmarks")
 
         self._print_image(
             img=self._pseudolandmarks,
