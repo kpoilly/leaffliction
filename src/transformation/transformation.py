@@ -87,7 +87,7 @@ class ImgTransformation:
         mask = pcv.threshold.dual_channels(self.img,
                                            x_channel="a",
                                            y_channel="b",
-                                           points=[(35, 50), (90, 110)],
+                                           points=[(55, 55), (100, 115)],
                                            above=True
                                            )
 
