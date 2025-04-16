@@ -23,9 +23,6 @@ def load_split_dataset(path: str, batch_size=128):
                                                         )
     except FileNotFoundError:
         raise AssertionError(f"file {path} not found.")
-    print(
-        f"Loaded df_train: {df_train.element_spec} - {len(df_train)} elements.")
-    print(f"Loaded df_val: {df_val.element_spec} - {len(df_val)} elements.")
 
     # df_train = df_train.cache()
     # df_train = df_train.shuffle(buffer_size=max(tf.data.experimental.cardinality(df_train).numpy(), 1000))
