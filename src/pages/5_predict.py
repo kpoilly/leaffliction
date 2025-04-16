@@ -12,7 +12,6 @@ st.write(
     """This Page is used to predict the class of a leaf."""
 )
 
-
 def view():
     imgFile = st.file_uploader(
         "image", type=["jpg", "jpeg", "JPG"])
@@ -30,7 +29,6 @@ def view():
                     predicted_class = predict(imgFile, model_path)
                     st.success("Prediction done!")
                     st.write(f"Predicted class: {predicted_class}")
-                os.remove("tmp.jpg")
 
 
 view()
