@@ -26,6 +26,12 @@ def load_split_dataset(path: str, batch_size=128):
     print(
         f"Loaded df_train: {df_train.element_spec} - {len(df_train)} elements.")
     print(f"Loaded df_val: {df_val.element_spec} - {len(df_val)} elements.")
+
+    # df_train = df_train.cache()
+    # df_train = df_train.shuffle(buffer_size=max(tf.data.experimental.cardinality(df_train).numpy(), 1000))
+    # df_train = df_train.prefetch(buffer_size=tf.data.AUTOTUNE)
+    # df_val = df_val.cache().prefetch(buffer_size=tf.data.AUTOTUNE)
+
     return df_train, df_val
 
 def draw_training(history):
@@ -57,7 +63,7 @@ def draw_training(history):
     plt.savefig(plot_path)
     print(f"Training history plot saved to '{plot_path}'")
 
-def create_model(nb_outputs, nb_filters=64, dropout=0.5):
+def create_model(nb_outputs, nb_filters=48, dropout=0.5):
     model = models.Sequential([
         layers.Rescaling(1.0 / 255),
         layers.BatchNormalization(),
@@ -67,7 +73,7 @@ def create_model(nb_outputs, nb_filters=64, dropout=0.5):
         layers.SeparableConv2D(nb_filters, (3, 3), activation="relu"),
         layers.MaxPooling2D(2, 2),
         layers.BatchNormalization(),
-        layers.SeparableConv2D(32, (1, 1), activation="relu"),
+        layers.SeparableConv2D(nb_filters / 2, (1, 1), activation="relu"),
         layers.MaxPooling2D(2, 2),
         layers.Flatten(),
         layers.Dense(256, activation="relu"),

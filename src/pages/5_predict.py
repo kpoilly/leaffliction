@@ -23,12 +23,11 @@ def view():
 
         if st.button("Predict"):
             with st.spinner("Predicting..."):
-                img = PIL.Image.open(imgFile)
                 model_path = "model/model.keras"
                 if not os.path.exists(model_path):
                     st.error(f"Model file '{model_path}' not found. Make sure to train the model first!")
                 else:
-                    predicted_class = predict(img, model_path)
+                    predicted_class = predict(imgFile, model_path)
                     st.success("Prediction done!")
                     st.write(f"Predicted class: {predicted_class}")
                 os.remove("tmp.jpg")
