@@ -37,6 +37,7 @@ class ImgTransformation:
         self._pseudolandmarks = None
 
     def get_images(self):
+        self.original()
         if self._disease_mask is None:
             self.mask_disease()
         if self._g_blur is None:
@@ -222,5 +223,5 @@ def transformation_from_img(img, displayFunc=None):
     """
     cls = ImgTransformation(img, None)
     images = cls.get_images()
-    # cls.color_histogram(displayFunc)
+    cls.color_histogram(displayFunc)
     return images
