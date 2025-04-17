@@ -19,13 +19,35 @@ from an image/dir passed as parameters")
         "Path to the directory to save the images",
         default="output/"
     )
+    cls.add_argument(
+        "--mask",
+        action="store_true",
+        help_text="Do the mask transformation",
+    )
+    cls.add_argument(
+        "--analyze",
+        action="store_true",
+        help_text="Do the analyze transformation",
+    )
+    cls.add_argument(
+        "--no_bg",
+        action="store_true",
+        help_text="Do the no_bg transformation",
+    )
     args = cls.get_args()
     cls.add_validator(StaticValidators.validate_path, args.src)
     cls.validate()
-    return args
+    transformations = set()
+    if args.mask:
+        transformations.add("mask")
+    if args.analyze:
+        transformations.add("analyze")
+    if args.no_bg:
+        transformations.add("no_bg")
+    return args, transformations
 
 
-def transformation_dir(path, output_dir):
+def transformation_dir(path, output_dir, transformations):
     """
     This function creates a list of images from a directory.
     """
@@ -43,7 +65,8 @@ def transformation_dir(path, output_dir):
                     os.makedirs(output_subdir)
                 output_file_basename = os.path.join(
                     output_subdir, file[:-4])
-                transformation(img_path, output_file_basename, "print")
+                transformation(img_path, output_file_basename,
+                               "print", transformations)
 
                 count += 1
                 print(f"{count} {count / 16}%", end="\r")
@@ -51,14 +74,15 @@ def transformation_dir(path, output_dir):
 
 if __name__ == "__main__":
     try:
-        args = arguments_logic()
+        args, transformations = arguments_logic()
         if not os.path.exists(args.dst):
             os.makedirs(args.dst)
 
         if os.path.isdir(args.src):
-            transformation_dir(args.src, args.dst)
+            transformation_dir(args.src, args.dst, transformations)
         else:
-            images = transformation(args.src, args.dst, "plot")
+            images = transformation(
+                args.src, args.dst, "plot", transformations)
         exit(0)
     except Exception as e:
         print(f"Error: {str(e)}", file=sys.stderr)

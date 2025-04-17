@@ -3,6 +3,10 @@ import sys
 from predict import predict
 from utils import Argument, StaticValidators
 
+os.environ['XLA_FLAGS'] = '--xla_gpu_cuda_data_dir=/home/fmau\
+guin/Documents/leaffliction/cuda_local'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 
 def arguments_logic():
     cls = Argument(
@@ -22,16 +26,12 @@ from an image passed as parameters")
 if __name__ == "__main__":
     try:
         args = arguments_logic()
-        model_path = "model/model.keras"
         image_path = args.file
-        
-        if not os.path.exists(model_path):
-            raise FileNotFoundError(f"Model file '{model_path}' not found. Make sure to train the model first!")
+
         if not os.path.exists(image_path):
             raise FileNotFoundError(f"image file '{image_path}' not found.")
-        
-        predicted_class = predict(image_path, model_path)
-        print(f"'{image_path}' has been predicted as : {predicted_class}")
+        predicted_class = predict(image_path)
+        print(f"Predicted class: {predicted_class}")
         exit(0)
     except Exception as e:
         print(f"Error: {str(e)}", file=sys.stderr)
