@@ -1,8 +1,6 @@
 
 import matplotlib.pyplot as plt
 from plantcv import plantcv as pcv
-import matplotlib
-matplotlib.use('TkAgg')
 
 
 def plot_stat_hist(key, val):

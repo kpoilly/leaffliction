@@ -64,7 +64,7 @@ def predict_images(img_tuple: any, models: dict[str, Model]):
     return predictions_results
 
 
-def predict(path: str, models_name: List[str] = None) -> List[bool]:
+def load_models(models_name: List[str] = None) -> dict[str, Model]:
     try:
         models = dict()
         for name in models_name:
@@ -74,12 +74,37 @@ def predict(path: str, models_name: List[str] = None) -> List[bool]:
     except Exception as e:
         print(f"Error loading model: {e}")
         return None
+    return models
+
+
+def predict_from_file(file, filename='filename',
+                      models_name: List[str] = None):
+    models = load_models(models_name)
+    if models is None:
+        return None
 
     try:
+        predictions = []
+        images = get_image(file, models_name)
+        predictions.append(predict_images(
+            (images, filename), models))
+        accuracy = print_accuracy_report(predictions)
+        return predictions, accuracy
+    except Exception as e:
+        print(f"Error processing image: {e}")
+        return None
+
+
+def predict(path: str, models_name: List[str] = None) -> List[bool]:
+    models = load_models(models_name)
+    if models is None:
+        return None
+
+    try:
+        predictions = []
         if not os.path.exists(path):
             raise FileNotFoundError(f"Image file '{path}' not found.")
 
-        predictions = []
         if os.path.isdir(path):
             for filename in os.listdir(path):
                 if filename.endswith(('.JPG', '.jpeg', '.png')):
@@ -93,8 +118,8 @@ def predict(path: str, models_name: List[str] = None) -> List[bool]:
                 (images, os.path.basename(path)), models))
         else:
             raise ValueError("Invalid path. Must be a file or directory.")
-        print_accuracy_report(predictions)
-        return predictions
+        accuracy = print_accuracy_report(predictions)
+        return predictions, accuracy
     except Exception as e:
         print(f"Error processing image: {e}")
         return None
@@ -145,16 +170,18 @@ def calculate_model_accuracy(predictions_list):
 def print_accuracy_report(predictions_list):
     """Print a formatted accuracy report for all models"""
     accuracy = calculate_model_accuracy(predictions_list)
-
+    if not accuracy:
+        print("No predictions to evaluate.")
+        return
     print("\nAccuracy Results:")
-    print("-" * 30)
+    result = "-" * 30
     for model, value in accuracy.items():
         acc, correct, total = value
-        print(f"{model.ljust(10)}: {acc:.2%} ({correct}/{total})")
+        result += f"\n{model.ljust(10)}: {acc:.2%} ({correct}/{total})"
 
     # Find best model
-    if accuracy:
-        best_model = max(accuracy.items(), key=lambda x: x[1][0])
-        print(
-            f"\nBest model: {best_model[0]} with \
-{best_model[1][0]:.2%} accuracy")
+    best_model = max(accuracy.items(), key=lambda x: x[1][0])
+    result += f"\n\nBest model: {best_model[0]} with \
+{best_model[1][0]:.2%} accuracy"
+    print(result)
+    return result

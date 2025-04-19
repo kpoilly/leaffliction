@@ -3,8 +3,6 @@ import cv2
 import os
 from .color_histogram import plot_histogram
 from rembg import remove
-import matplotlib
-matplotlib.use('TkAgg')
 
 
 def remove_background_rembg(image):
@@ -200,6 +198,32 @@ class ImgTransformation:
         plot_histogram(self.img, self._kept_mask, display_func)
 
 
+def transformation_handler(img, dst, pcv_option, transformations):
+    cls = ImgTransformation(img, dst, pcv_option)
+    if transformations is not None and len(transformations) > 0:
+        images = dict()
+        for transform in transformations:
+            if transform == "original":
+                images["original"] = cls.original(print=True)
+            if transform == "no_bg":
+                images["no_bg"] = cls.no_bg(print=True)
+            if transform == "mask":
+                images["mask"] = cls.mask_disease(print=True)
+            elif transform == "blur":
+                images["blur"] = cls.gaussian_blur(print=True)
+            elif transform == "roi":
+                images["roi"] = cls.roi_objects(print=True)
+            elif transform == "analyze":
+                images["analyze"] = cls.analyze_objects(print=True)
+            elif transform == "pseudolandmarks":
+                images["pseudolandmarks"] = cls.pseudolandmarks(print=True)
+        return images
+    images = cls.get_images()
+    if pcv_option == "plot":
+        cls.color_histogram()
+    return images
+
+
 def transformation(path, dst, pcv_option="plot", transformations=None):
     """_summary_
     Augment images in the given path using OpenCV.
@@ -210,7 +234,11 @@ def transformation(path, dst, pcv_option="plot", transformations=None):
         path (_type_): img file path
         to be augmented
     """
-    img, _, _ = pcv.readimage(filename=path)
+    if isinstance(path, str):
+        img, _, _ = pcv.readimage(filename=path)
+    else:
+        img = path
+
     cls = ImgTransformation(img, dst, pcv_option)
     if transformations is not None and len(transformations) > 0:
         images = dict()

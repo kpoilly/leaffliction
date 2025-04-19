@@ -2,6 +2,9 @@ from utils import Argument, StaticValidators
 from augmentation import augmentation, save_images
 import sys
 import os
+import matplotlib
+
+matplotlib.use('TkAgg')
 
 
 def arguments_logic():

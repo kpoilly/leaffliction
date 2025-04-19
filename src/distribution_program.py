@@ -1,6 +1,9 @@
 from utils import Argument, StaticValidators
 from distribution import distribution, plot_distribution
 import sys
+import matplotlib
+
+matplotlib.use('TkAgg')
 
 
 def arguments_logic():

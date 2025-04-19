@@ -1,12 +1,9 @@
 import os
 import tensorflow as tf
 import matplotlib.pyplot as plt
-import matplotlib
 from keras import layers, models
 from keras.api.callbacks import EarlyStopping
 from keras.api.utils import image_dataset_from_directory
-
-matplotlib.use('TkAgg')
 
 
 def load_split_dataset(path: str, batch_size=128):

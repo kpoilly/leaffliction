@@ -1,10 +1,13 @@
-import os
 import cv2
 import streamlit as st
 import numpy as np
-
-from predict import predict
+import os
+from predict import predict_from_file
 from transformation import transformation_from_img
+
+os.environ['XLA_FLAGS'] = "--xla_gpu_cuda_data_dir=/usr/lib/cuda"
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 
 st.set_page_config(page_title="Prediction", page_icon="")
 
@@ -14,11 +17,29 @@ st.write(
     """This Page is used to predict the class of a leaf."""
 )
 
+
+def format_predictions_for_table(predictions_list):
+    table_data = []
+    for pred_dict in predictions_list:
+        for model_name, (is_correct, class_name) in pred_dict.items():
+            # Add checkmark or x emoji based on correctness
+            status = "✅" if is_correct else "❌"
+            # Create a row for the table
+            table_data.append({
+                "model_name": model_name,
+                "OK": status,
+                "class_predicted": class_name
+            })
+    return table_data
+
+
 def view():
     imgFile = st.file_uploader(
         "image", type=["jpg", "jpeg", "JPG"])
 
+    # Get the basename of the file if a file is uploaded
     if imgFile:
+        file_basename = os.path.basename(imgFile.name)
         file_bytes = np.frombuffer(imgFile.read(), np.uint8)
         img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
         images = transformation_from_img(img, st.pyplot)
@@ -31,12 +52,17 @@ def view():
 
         if st.button("Predict"):
             with st.spinner("Predicting..."):
-                model_path = "model/model.keras"
-                if not os.path.exists(model_path):
-                    st.error(f"Model file '{model_path}' not found. Make sure to train the model first!")
-                else:
-                    predicted_class = predict(imgFile, model_path)
-                    st.success(f"Predicted class: {predicted_class}")
+                models_name = ["original", "mask", "no_bg"]
+                predictions, accuracy = predict_from_file(
+                    img, file_basename, models_name=models_name)
+                st.success("Prediction completed!")
+                table_data = format_predictions_for_table(predictions)
+                st.write("### Prediction Results")
+                st.table(table_data)
 
 
-view()
+try:
+    view()
+except Exception as e:
+    st.error(f"Error: {str(e)}")
+    st.stop()

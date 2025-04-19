@@ -1,8 +1,5 @@
 import os
 import matplotlib.pyplot as plt
-import matplotlib
-
-matplotlib.use('TkAgg')  # Use the TkAgg backend for matplotlib
 
 
 def distribution(path):
