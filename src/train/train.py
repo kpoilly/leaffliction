@@ -1,10 +1,12 @@
 import os
 import tensorflow as tf
 import matplotlib.pyplot as plt
-
+import matplotlib
 from keras import layers, models
 from keras.api.callbacks import EarlyStopping
 from keras.api.utils import image_dataset_from_directory
+
+matplotlib.use('TkAgg')
 
 
 def load_split_dataset(path: str, batch_size=128):
@@ -24,38 +26,91 @@ def load_split_dataset(path: str, batch_size=128):
     except FileNotFoundError:
         raise AssertionError(f"file {path} not found.")
     print(
-        f"Loaded df_train: {df_train.element_spec} - {len(df_train)} elements.")
+        f"Loaded df_train: {df_train.element_spec} \
+- {len(df_train)} elements.")
     print(f"Loaded df_val: {df_val.element_spec} - {len(df_val)} elements.")
     return df_train, df_val
 
-def draw_training(history):
+
+# Add this new class to track batch-level metrics
+class BatchHistory(tf.keras.callbacks.Callback):
+    def __init__(self):
+        super().__init__()
+        self.batch_losses = []
+        self.batch_accuracies = []
+        self.batch_nums = []
+        self.current_batch = 0
+        # Keep track of epoch boundaries for plotting
+        self.epoch_boundaries = [0]
+
+    def on_train_batch_end(self, batch, logs=None):
+        self.batch_losses.append(logs.get('loss'))
+        self.batch_accuracies.append(logs.get('accuracy'))
+        self.batch_nums.append(self.current_batch)
+        self.current_batch += 1
+
+    def on_epoch_end(self, epoch, logs=None):
+        # Mark the boundary between epochs
+        self.epoch_boundaries.append(self.current_batch)
+
+
+def draw_training(history, batch_history, name):
     acc = history.history['accuracy']
     val_acc = history.history['val_accuracy']
     loss = history.history['loss']
     val_loss = history.history['val_loss']
     epochs_range = range(len(acc))
 
-    plt.figure(figsize=(12, 6))
-    plt.subplot(1, 2, 1)
+    # Create a figure with 4 subplots (2 rows, 2 columns)
+    plt.figure(figsize=(15, 10))
+
+    # 1. Epoch-level accuracy
+    plt.subplot(2, 2, 1)
     plt.plot(epochs_range, acc, label='Training Accuracy')
     plt.plot(epochs_range, val_acc, label='Validation Accuracy')
     plt.legend(loc='lower right')
-    plt.title('Training and Validation Accuracy')
+    plt.title('Epoch-level Accuracy')
     plt.xlabel('Epoch')
     plt.ylabel('Accuracy')
 
-    plt.subplot(1, 2, 2)
+    # 2. Epoch-level loss
+    plt.subplot(2, 2, 2)
     plt.plot(epochs_range, loss, label='Training Loss')
     plt.plot(epochs_range, val_loss, label='Validation Loss')
     plt.legend(loc='upper right')
-    plt.title('Training and Validation Loss')
+    plt.title('Epoch-level Loss')
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
 
+    # 3. Batch-level accuracy
+    plt.subplot(2, 2, 3)
+    plt.plot(batch_history.batch_nums,
+             batch_history.batch_accuracies, label='Batch Accuracy')
+    # Add vertical lines to indicate epoch boundaries
+    for boundary in batch_history.epoch_boundaries[1:-1]:
+        plt.axvline(x=boundary, color='r', linestyle='--', alpha=0.3)
+    plt.legend(loc='lower right')
+    plt.title('Batch-level Accuracy')
+    plt.xlabel('Batch')
+    plt.ylabel('Accuracy')
+
+    # 4. Batch-level loss
+    plt.subplot(2, 2, 4)
+    plt.plot(batch_history.batch_nums,
+             batch_history.batch_losses, label='Batch Loss')
+    # Add vertical lines to indicate epoch boundaries
+    for boundary in batch_history.epoch_boundaries[1:-1]:
+        plt.axvline(x=boundary, color='r', linestyle='--', alpha=0.3)
+    plt.legend(loc='upper right')
+    plt.title('Batch-level Loss')
+    plt.xlabel('Batch')
+    plt.ylabel('Loss')
+
     plt.tight_layout()
-    plot_path = os.path.join("metrics", 'training_history.png')
+    plot_path = os.path.join("metrics", f"training_history_{name}.png")
     plt.savefig(plot_path)
     print(f"Training history plot saved to '{plot_path}'")
+
 
 def create_model(nb_outputs, nb_filters=64, dropout=0.5):
     model = models.Sequential([
@@ -83,9 +138,11 @@ def create_model(nb_outputs, nb_filters=64, dropout=0.5):
     return model
 
 
-def train(df, df_val, nb_filters=48, dropout=0.3, epochs=10, patience=3):
-    print(f"Starting model's training with settings:\n{epochs} epochs\n\
-Convolution filters: {nb_filters}\nDropout: {dropout}")
+def train(df, df_val, name, nb_filters=48, dropout=0.3, epochs=10, patience=3):
+    print(f"{name} | Starting model's training with settings:\
+\n{epochs} epochs\
+\nConvolution filters: {nb_filters}\
+\nDropout: {dropout}")
 
     model = create_model(len(df.class_names), nb_filters, dropout)
     early_stop = EarlyStopping(
@@ -95,17 +152,18 @@ Convolution filters: {nb_filters}\nDropout: {dropout}")
         mode='min',
         restore_best_weights=True
     )
+    batch_history = BatchHistory()
 
     history = model.fit(df,
-              epochs=epochs,
-              validation_data=df_val,
-              callbacks=[early_stop])
+                        epochs=epochs,
+                        validation_data=df_val,
+                        callbacks=[early_stop, batch_history])
 
     loss, accuracy = model.evaluate(df_val)
     print(f"Val Loss: {loss:.4f}")
     print(f"Val Accuracy: {accuracy:.4f}")
 
-    draw_training(history)
+    draw_training(history, batch_history, name)
     print(model.summary())
 
     return model
