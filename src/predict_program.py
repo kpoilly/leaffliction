@@ -3,8 +3,7 @@ import sys
 from predict import predict
 from utils import Argument, StaticValidators
 
-os.environ['XLA_FLAGS'] = '--xla_gpu_cuda_data_dir=/home/fmau\
-guin/Documents/leaffliction/cuda_local'
+os.environ['XLA_FLAGS'] = "--xla_gpu_cuda_data_dir=/usr/lib/cuda"
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
@@ -23,16 +22,19 @@ from an image passed as parameters")
     return args
 
 
+def main(args):
+    image_path = args.file
+
+    if not os.path.exists(image_path):
+        raise FileNotFoundError(f"image file '{image_path}' not found.")
+    models_name = ["original", "mask", "no_bg"]
+    predict(image_path, models_name)
+
+
 if __name__ == "__main__":
     try:
         args = arguments_logic()
-        image_path = args.file
-
-        if not os.path.exists(image_path):
-            raise FileNotFoundError(f"image file '{image_path}' not found.")
-        predicted_class = predict(image_path)
-        print(f"Predicted class: {predicted_class}")
-        exit(0)
+        main(args)
     except Exception as e:
         print(f"Error: {str(e)}", file=sys.stderr)
         exit(1)

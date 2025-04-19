@@ -35,6 +35,22 @@ class StaticValidators:
         if not any(path_str.endswith(ext) for ext in allowed_extensions):
             raise AssertionError(f"File {path_str} is not a valid image file.")
 
+    @staticmethod
+    def validate_number(args):
+        """
+        This function checks if the given path is a directory.
+        If it is not, it raises an AssertionError with a message.
+        """
+        value, min_value, max_value = args
+        if not isinstance(value, (int)):
+            raise AssertionError(f"Value {value} is not a number.")
+        if min_value is not None and value < min_value:
+            raise AssertionError(
+                f"Value {value} is less than minimum {min_value}.")
+        if max_value is not None and value > max_value:
+            raise AssertionError(
+                f"Value {value} is greater than maximum {max_value}.")
+
 
 class ArgumentValidator():
     def __init__(self):
@@ -63,13 +79,13 @@ class Argument(ArgumentValidator):
         self.parser = argparse.ArgumentParser(description=description)
         super().__init__()
 
-    def add_argument(self, arg_name, arg_type=None, help_text="",
+    def add_argument(self, arg_name, type=None, help="",
                      default=None, action=None, nargs=None):
         """
         This function adds an argument to the parser.
         """
         kwargs = {
-            'help': help_text,
+            'help': help,
         }
         if nargs is not None:
             kwargs['nargs'] = nargs
@@ -77,7 +93,7 @@ class Argument(ArgumentValidator):
         if action == 'store_true':
             kwargs['action'] = 'store_true'
         else:
-            kwargs['type'] = arg_type
+            kwargs['type'] = type
             kwargs['default'] = default
 
         self.parser.add_argument(arg_name, **kwargs)

@@ -4,10 +4,22 @@ import argparse
 
 from train import train, load_split_dataset
 
-os.environ['XLA_FLAGS'] = '--xla_gpu_cuda_data_dir=/home/fmaug\
-uin/Documents/leaffliction/cuda_local'
+os.environ['XLA_FLAGS'] = "--xla_gpu_cuda_data_dir=/usr/lib/cuda"
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-if __name__ == "__main__":
+
+
+def train_model(name, dataset_path, args):
+    if not os.path.exists(dataset_path):
+        raise FileNotFoundError(
+            f"Dataset path '{dataset_path}' not found")
+    df_train, df_val = load_split_dataset(dataset_path, args.batch_size)
+    model = train(df_train, df_val, name, args.nb_filters,
+                  args.dropout, args.epochs, args.patience)
+    model.save(f"model/model_{name}.keras")
+    print(f"Model saved at 'model/model_{name}.keras'.")
+
+
+def main():
     data_path = "dataset"
 
     parser = argparse.ArgumentParser(
@@ -24,22 +36,17 @@ if __name__ == "__main__":
                         help="Patience for early stopping.")
     args = parser.parse_args()
 
-    def train_model(name, dataset_path):
-        if not os.path.exists(dataset_path):
-            raise FileNotFoundError(
-                f"Dataset path '{dataset_path}' not found")
-        df_train, df_val = load_split_dataset(dataset_path, args.batch_size)
-        model = train(df_train, df_val, name, args.nb_filters,
-                      args.dropout, args.epochs, args.patience)
-        model.save(f"model/model_{name}.keras")
-        print(f"Model saved at 'model/model_{name}.keras'.")
+    # Train the model with the original augmented dataset
+    train_model("original", os.path.join(data_path, "original", args))
+    # Train the model with the mask dataset
+    train_model("mask", os.path.join(data_path, "mask", args))
+    # Train the model with the no_bg dataset
+    train_model("no_bg", os.path.join(data_path, "no_bg", args))
 
+
+if __name__ == "__main__":
     try:
-        # Train the model with the original augmented dataset
-        train_model("original", os.path.join(data_path, "original"))
-        # Train the model with the mask dataset
-        train_model("mask", os.path.join(data_path, "mask"))
-
+        main()
     except Exception as e:
         print(f"Error: {str(e)}", file=sys.stderr)
         exit()

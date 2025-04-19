@@ -16,7 +16,7 @@ def load_split_dataset(path: str, batch_size=128):
     """
     try:
         df_train, df_val = image_dataset_from_directory(path,
-                                                        image_size=(256, 256),
+                                                        image_size=(128, 128),
                                                         batch_size=batch_size,
                                                         validation_split=0.2,
                                                         subset='both',
