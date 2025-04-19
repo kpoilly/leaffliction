@@ -13,29 +13,29 @@ def arguments_logic():
 from an image/dir passed as parameters")
     cls.add_argument(
         "-src",
-        str,
-        "Path to the img file",
+        type=str,
+        help="Path to the img file",
     )
     cls.add_argument(
         "-dst",
-        str,
-        "Path to the directory to save the images",
+        type=str,
+        help="Path to the directory to save the images",
         default="output/"
     )
     cls.add_argument(
         "--mask",
         action="store_true",
-        help_text="Do the mask transformation",
+        help="Do the mask transformation",
     )
     cls.add_argument(
         "--analyze",
         action="store_true",
-        help_text="Do the analyze transformation",
+        help="Do the analyze transformation",
     )
     cls.add_argument(
         "--no_bg",
         action="store_true",
-        help_text="Do the no_bg transformation",
+        help="Do the no_bg transformation",
     )
     args = cls.get_args()
     cls.add_validator(StaticValidators.validate_path, args.src)

@@ -17,19 +17,19 @@ from an image passed as parameters")
         "Path to the img file",
     )
     cls.add_argument("--max",
-                     help_text="Max the number of images saved",
-                     arg_type=int, nargs="?")
+                     help="Max the number of images saved",
+                     type=int, nargs="?")
     cls.add_argument("--skip-crop",
-                     help_text="Skip the crop augmentation",
+                     help="Skip the crop augmentation",
                      action="store_true")
     cls.add_argument("--skip-shear",
-                     help_text="Skip the shear augmentation",
+                     help="Skip the shear augmentation",
                      action="store_true")
     cls.add_argument("--skip-blur",
-                     help_text="Skip the blur augmentation",
+                     help="Skip the blur augmentation",
                      action="store_true")
     cls.add_argument("--skip-flip",
-                     help_text="Skip the flip augmentation",
+                     help="Skip the flip augmentation",
                      action="store_true")
     args = cls.get_args()
     cls.add_validator(StaticValidators.validate_path, args.file)
