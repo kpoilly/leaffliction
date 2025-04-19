@@ -1,3 +1,3 @@
-from .train import train, create_model, load_split_dataset
+from .train import train, create_model
 
 __all__ = ["train", "create_model"]
