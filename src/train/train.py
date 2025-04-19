@@ -122,7 +122,7 @@ def create_model(nb_outputs, nb_filters=64, dropout=0.5):
         layers.SeparableConv2D(nb_filters, (3, 3), activation="relu"),
         layers.MaxPooling2D(2, 2),
         layers.BatchNormalization(),
-        layers.SeparableConv2D(32, (1, 1), activation="relu"),
+        layers.SeparableConv2D(nb_filters / 2, (1, 1), activation="relu"),
         layers.MaxPooling2D(2, 2),
         layers.Flatten(),
         layers.Dense(256, activation="relu"),
