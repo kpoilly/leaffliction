@@ -13,6 +13,7 @@ Make sure you have all necessary dependencies installed. Then simply run:
 ```bash
 make install
 ```
+
 ### Start the Streamlit App
 
 To launch the Streamlit interface, run:
@@ -30,7 +31,7 @@ make start
 Visualize the distribution of image data in a folder:
 
 ```bash
-python3 src/distribution_program.py path/to/folder
+python3 src/Distribution.py path/to/folder
 ```
 
 #### 2. 🧪 Augmentation
@@ -38,7 +39,7 @@ python3 src/distribution_program.py path/to/folder
 Visualize augmentations for a single image:
 
 ```bash
-python3 src/augmentation_program.py path/to/file
+python3 src/Augmentation.py path/to/file
 ```
 
 **Supported transformations:**
@@ -53,17 +54,17 @@ python3 src/augmentation_program.py path/to/file
 Generate augmented images for all files in a folder:
 
 ```bash
-python3 src/augmentation_program.py path/to/folder
+python3 src/Augmentation.py path/to/folder
 ```
 
-*Augmented images will be saved next to the originals.*
+_Augmented images will be saved next to the originals._
 
 #### 3. 🔬 Transformation
 
 Visualize transformations applied to a single image:
 
 ```bash
-python3 src/transformation_program.py -src path/to/file
+python3 src/Transformation.py -src path/to/file
 ```
 
 **Displays:**
@@ -79,10 +80,10 @@ python3 src/transformation_program.py -src path/to/file
 Apply transformations to all images in a folder:
 
 ```bash
-python3 src/transformation_program.py -src path/to/folder -dst path/to/destination
+python3 src/Transformation.py -src path/to/folder -dst path/to/destination
 ```
 
-*Transformed images will be saved in the dst folder.*
+_Transformed images will be saved in the dst folder._
 
 ---
 
@@ -96,11 +97,11 @@ python3 src/transformation_program.py -src path/to/folder -dst path/to/destinati
 │   │   ├── transformation
 │   │   ├── train
 │   │   └── predict
-│   ├── distribution_program.py
-│   ├── augmentation_program.py
-│   ├── transformation_program.py
-│   ├── train_program.py
-│   └── predict_program.py
+│   ├── Distribution.py
+│   ├── Augmentation.py
+│   ├── Transformation.py
+│   ├── Train.py
+│   └── Predict.py
 ├── makefile
 └── README.md
 ```
