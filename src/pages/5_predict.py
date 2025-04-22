@@ -4,8 +4,6 @@ import numpy as np
 import os
 from predict import predict_from_file
 from transformation import transformation_from_img
-
-os.environ['XLA_FLAGS'] = "--xla_gpu_cuda_data_dir=/usr/lib/cuda"
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
@@ -46,15 +44,16 @@ def view():
 
         cols = st.columns(3)
         image_list = list(images.items())
-        for i, (key, img) in enumerate(image_list):
+        for i, (key, _img) in enumerate(image_list):
             with cols[i % 3]:
-                st.image(img, caption=key, use_container_width=True)
+                st.image(_img, caption=key, use_container_width=True)
 
         if st.button("Predict"):
             with st.spinner("Predicting..."):
                 models_name = ["original", "mask", "no_bg"]
                 predictions, accuracy = predict_from_file(
-                    img, file_basename, models_name=models_name)
+                    img, file_basename,
+                    models_name=models_name)
                 st.success("Prediction completed!")
                 table_data = format_predictions_for_table(predictions)
                 st.write("### Prediction Results")

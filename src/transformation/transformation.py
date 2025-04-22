@@ -209,13 +209,13 @@ def transformation_handler(img, dst, pcv_option, transformations):
                 images["no_bg"] = cls.no_bg(print=True)
             if transform == "mask":
                 images["mask"] = cls.mask_disease(print=True)
-            elif transform == "blur":
+            if transform == "blur":
                 images["blur"] = cls.gaussian_blur(print=True)
-            elif transform == "roi":
+            if transform == "roi":
                 images["roi"] = cls.roi_objects(print=True)
-            elif transform == "analyze":
+            if transform == "analyze":
                 images["analyze"] = cls.analyze_objects(print=True)
-            elif transform == "pseudolandmarks":
+            if transform == "pseudolandmarks":
                 images["pseudolandmarks"] = cls.pseudolandmarks(print=True)
         return images
     images = cls.get_images()
@@ -249,13 +249,13 @@ def transformation(path, dst, pcv_option="plot", transformations=None):
                 images["no_bg"] = cls.no_bg(print=True)
             if transform == "mask":
                 images["mask"] = cls.mask_disease(print=True)
-            elif transform == "blur":
+            if transform == "blur":
                 images["blur"] = cls.gaussian_blur(print=True)
-            elif transform == "roi":
+            if transform == "roi":
                 images["roi"] = cls.roi_objects(print=True)
-            elif transform == "analyze":
+            if transform == "analyze":
                 images["analyze"] = cls.analyze_objects(print=True)
-            elif transform == "pseudolandmarks":
+            if transform == "pseudolandmarks":
                 images["pseudolandmarks"] = cls.pseudolandmarks(print=True)
         return images
     images = cls.get_images()

@@ -4,7 +4,6 @@ import argparse
 
 from train import train, load_split_dataset
 
-os.environ['XLA_FLAGS'] = "--xla_gpu_cuda_data_dir=/usr/lib/cuda"
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
