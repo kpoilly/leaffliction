@@ -104,6 +104,7 @@ def draw_training(history, batch_history, name):
     plt.ylabel('Loss')
 
     plt.tight_layout()
+    os.makedirs('metrics', exist_ok=True)
     plot_path = os.path.join("metrics", f"training_history_{name}.png")
     plt.savefig(plot_path)
     print(f"Training history plot saved to '{plot_path}'")

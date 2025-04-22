@@ -77,7 +77,6 @@ def arguments_logic():
                      help="Number of random images to select from each class")
     args = cls.get_args()
     cls.add_validator(StaticValidators.validate_path_dir, args.src)
-    cls.add_validator(StaticValidators.validate_path_dir, args.dst)
     cls.add_validator(StaticValidators.validate_number, (args.count, 1, 200))
     cls.validate()
     return args

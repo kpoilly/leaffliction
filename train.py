@@ -14,6 +14,7 @@ def train_model(name, dataset_path, args):
     df_train, df_val = load_split_dataset(dataset_path, args.batch_size)
     model = train(df_train, df_val, name, args.nb_filters,
                   args.dropout, args.epochs, args.patience)
+    os.makedirs('model', exist_ok=True)
     model.save(f"model/model_{name}.keras")
     print(f"Model saved at 'model/model_{name}.keras'.")
 
@@ -33,14 +34,25 @@ def main():
                         default=0.3, help="Dropout rate.")
     parser.add_argument("--patience", type=int, default=3,
                         help="Patience for early stopping.")
+    parser.add_argument("--only", type=str, nargs="?",
+                        help="train only the model. \
+Between ['original', 'mask', 'no_bg'].")
     args = parser.parse_args()
 
-    # Train the model with the original augmented dataset
-    train_model("original", os.path.join(data_path, "original", args))
-    # Train the model with the mask dataset
-    train_model("mask", os.path.join(data_path, "mask", args))
-    # Train the model with the no_bg dataset
-    train_model("no_bg", os.path.join(data_path, "no_bg", args))
+    if args.only is not None:
+        if args.only not in ["original", "mask", "no_bg"]:
+            raise ValueError(
+                f"Invalid model name '{args.only}'. \
+Choose from ['original', 'mask', 'no_bg'].")
+        data_path = os.path.join(data_path, args.only)
+        train_model(args.only, data_path, args)
+    else:
+        # Train the model with the original augmented dataset
+        train_model("original", os.path.join(data_path, "original"), args)
+        # Train the model with the mask dataset
+        train_model("mask", os.path.join(data_path, "mask"), args)
+        # Train the model with the no_bg dataset
+        train_model("no_bg", os.path.join(data_path, "no_bg"), args)
 
 
 if __name__ == "__main__":
