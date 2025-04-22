@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 python := python3
-SRC_DIR := src
+SRC_DIR := .
 VENV_DIR := leaf_venv
 DEP_FILE := requirements.txt
 
@@ -32,7 +32,7 @@ help:
 	@echo "  phony:      Run the phony targets"
 
 start:
-	@$(call venvWrapper, streamlit run ${SRC_DIR}/main.py --server.baseUrlPath=${SRC_DIR} )
+	@$(call venvWrapper, streamlit run main.py )
 
 run-docker:
 	docker build -t $(DOCKER_IMG_NAME) .

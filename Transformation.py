@@ -1,7 +1,7 @@
 from utils import Argument, StaticValidators
+from transformation import transformation
 import sys
 import os
-from transformation import transformation
 import matplotlib
 
 matplotlib.use('TkAgg')
