@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from keras import layers, models
 from keras.api.callbacks import EarlyStopping
 from keras.api.utils import image_dataset_from_directory
+import matplotlib
+matplotlib.use('TkAgg')
 
 
 def load_split_dataset(path: str, batch_size=128):
@@ -120,7 +122,7 @@ def create_model(nb_outputs, nb_filters=64, dropout=0.5):
         layers.SeparableConv2D(nb_filters, (3, 3), activation="relu"),
         layers.MaxPooling2D(2, 2),
         layers.BatchNormalization(),
-        layers.SeparableConv2D(nb_filters / 2, (1, 1), activation="relu"),
+        layers.SeparableConv2D(nb_filters // 2, (1, 1), activation="relu"),
         layers.MaxPooling2D(2, 2),
         layers.Flatten(),
         layers.Dense(256, activation="relu"),
@@ -151,7 +153,6 @@ def train(df, df_val, name, nb_filters=48, dropout=0.3, epochs=10, patience=3):
         restore_best_weights=True
     )
     batch_history = BatchHistory()
-
     history = model.fit(df,
                         epochs=epochs,
                         validation_data=df_val,
