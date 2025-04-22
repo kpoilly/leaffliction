@@ -75,17 +75,21 @@ def transformation_dir(path, output_dir, transformations):
                 print(f"{count} {count / 16}%", end="\r")
 
 
-if __name__ == "__main__":
-    try:
-        args, transformations = arguments_logic()
+def main():
+    args, transformations = arguments_logic()
+
+    if os.path.isdir(args.src):
         if not os.path.exists(args.dst):
             os.makedirs(args.dst)
+        transformation_dir(args.src, args.dst, transformations)
+    else:
+        transformation(
+            args.src, args.dst, "plot", transformations)
 
-        if os.path.isdir(args.src):
-            transformation_dir(args.src, args.dst, transformations)
-        else:
-            images = transformation(
-                args.src, args.dst, "plot", transformations)
+
+if __name__ == "__main__":
+    try:
+        main()
         exit(0)
     except Exception as e:
         print(f"Error: {str(e)}", file=sys.stderr)
